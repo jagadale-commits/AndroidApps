@@ -2,13 +2,6 @@ package com.example.calculator;
 import java.util.Stack;
 
 public class MathCalculate {
-
-    public static void main(String[] args) {
-        String orgString = "3+7+4*5";
-        System.out.println(CalculateExpression(orgString));
-
-    }
-
     public static String CalculateExpression(String expression) {
         while (expression.contains("%")) {
             int Index = expression.indexOf("%");
