@@ -1,14 +1,14 @@
 package com.example.calculator;
 
 import androidx.appcompat.app.AppCompatActivity;
-import org.mariuszgromada.math.mxparser.*;
 
 import android.os.Build;
 import android.text.SpannableStringBuilder;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.os.Bundle;
+
+import static com.example.calculator.MathCalculate.CalculateExpression;
 
 public class MainActivity extends AppCompatActivity {
     private EditText usersInputBox;
@@ -139,9 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
         btnEqual.setOnClickListener(v -> {
             String expression = usersInputBox.getText().toString();
-            Expression exp = new Expression(expression);
 
-            String result = String.valueOf(exp.calculate());
+            String result = String.valueOf(CalculateExpression(expression));
 
             usersInputBox.setText(result);
             usersInputBox.setSelection(result.length());
