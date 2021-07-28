@@ -2,22 +2,15 @@ package com.example.calculator;
 import java.util.Stack;
 
 public class MathCalculate {
+
     public static String CalculateExpression(String expression) {
+        if(expression.charAt(0)=='-') expression = "0" + expression;
+        System.out.println(expression);
         while (expression.contains("%")) {
             int Index = expression.indexOf("%");
             expression = expression.substring(0, Index)
                     + "/100"
                     + expression.substring(Index + 1,
-                    expression.length());
-        }
-
-        while (expression.contains("(") && expression.contains(")")) {
-            int fIndex = expression.indexOf("(");
-            int nIndex = expression.indexOf(")");
-            String subString = expression.substring(fIndex + 1, nIndex);
-            expression = expression.substring(0, fIndex)
-                    + calculate(subString).toString()
-                    + expression.substring(nIndex + 1,
                     expression.length());
         }
         return calculate(expression);
@@ -26,13 +19,12 @@ public class MathCalculate {
 
     public static String calculate(String expression)
     {
+        if(expression.charAt(0)=='-') expression = "0" + expression;
         char[] tokens = expression.toCharArray();
 
 
         Stack<Double> values = new
                 Stack<Double>();
-
-
         Stack<Character> ops = new
                 Stack<Character>();
 
@@ -43,39 +35,41 @@ public class MathCalculate {
                 continue;
 
 
-            if (tokens[i] >= '0' &&
-                    tokens[i] <= '9' || tokens[i] == '.')
+            if ((tokens[i] >= '0' &&
+                    tokens[i] <= '9') || tokens[i] == '.')
             {
                 StringBuffer sbuf = new
                         StringBuffer();
 
                 while (i < tokens.length &&
-                        tokens[i] >= '0' &&
-                        tokens[i] <= '9')
+                        ((tokens[i] >= '0' &&
+                                tokens[i] <= '9') || tokens[i] == '.'))
                     sbuf.append(tokens[i++]);
                 values.push(Double.parseDouble(sbuf.
                         toString()));
                 i--;
             }
-
+            else if (tokens[i] == '(')
+                ops.push(tokens[i]);
+            else if (tokens[i] == ')')
+            {
+                while (ops.peek() != '(')
+                    values.push(applyOp(ops.pop(),
+                            values.pop(),
+                            values.pop()));
+                ops.pop();
+            }
             else if (tokens[i] == '+' ||
                     tokens[i] == '-' ||
                     tokens[i] == '*' ||
                     tokens[i] == '/')
             {
-                // While top of 'ops' has same
-                // or greater precedence to current
-                // token, which is an operator.
-                // Apply operator on top of 'ops'
-                // to top two elements in values stack
                 while (!ops.empty() &&
                         hasPrecedence(tokens[i],
                                 ops.peek()))
                     values.push(applyOp(ops.pop(),
                             values.pop(),
                             values.pop()));
-
-                // Push current token to 'ops'.
                 ops.push(tokens[i]);
             }
         }
@@ -123,6 +117,5 @@ public class MathCalculate {
         }
         return 0;
     }
-
 
 }

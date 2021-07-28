@@ -7,6 +7,8 @@ import android.text.SpannableStringBuilder;
 import android.widget.Button;
 import android.widget.EditText;
 import android.os.Bundle;
+import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.calculator.MathCalculate.CalculateExpression;
 
@@ -33,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnZero;
     private Button btnDecimal;
     private Button btnEqual;
-
+    private Button historybtn;
+    private LinkedList<String> historyList = new LinkedList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +44,25 @@ public class MainActivity extends AppCompatActivity {
         setupUI();
         //clear all text in users input
         usersInputBox.setText("");
+        AtomicInteger indx = new AtomicInteger();
+        indx.set(0);
+        historybtn.setOnClickListener(v -> {
+            String str = "";
+            if (!historyList.isEmpty() && indx.get() < historyList.size())
+            {
+                str = historyList.get(indx.get());
+                indx.getAndIncrement();
+            }
+            //set input box with last element
+            if(!historyList.isEmpty() && indx.get() == historyList.size())
+            {
+                str = historyList.get(indx.get()-1);
+            }
+            usersInputBox.setText(str);
+            int textLength = usersInputBox.getText().length();
+            if(textLength>0)
+                usersInputBox.setSelection(textLength);
+        });
 
         backspace.setOnClickListener(v -> {
             //gets the cursors position
@@ -127,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnPlus_Minus.setOnClickListener(v -> {
             int pos = usersInputBox.getSelectionStart();
-            usersInputBox.setText(updateText("-", usersInputBox.getText().toString(), usersInputBox.getSelectionStart()));
+            usersInputBox.setText("-" + usersInputBox.getText().toString());
             usersInputBox.setSelection(pos + 1);
         });
 
@@ -139,12 +161,17 @@ public class MainActivity extends AppCompatActivity {
 
         btnEqual.setOnClickListener(v -> {
             String expression = usersInputBox.getText().toString();
-
-            String result = String.valueOf(CalculateExpression(expression));
-
-            usersInputBox.setText(result);
-            usersInputBox.setSelection(result.length());
-
+            historyList.addFirst(expression);
+            indx.set(0);
+            try {
+                String result = String.valueOf(CalculateExpression(expression));
+                usersInputBox.setText(result);
+                usersInputBox.setSelection(result.length());
+            } catch (Exception e) {
+                String result = "NaN";
+                usersInputBox.setText(result);
+                usersInputBox.setSelection(result.length());
+            }
         });
 
         btnDivide.setOnClickListener(v -> {
@@ -225,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
         btnZero = findViewById(R.id.zero);
         btnDecimal = findViewById(R.id.point);
         btnEqual = findViewById(R.id.equals);
+        historybtn = findViewById(R.id.historybtn);
     }
 
     private String updateText(String stringToAdd, String oldString, int cursorPos){

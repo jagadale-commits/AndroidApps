@@ -4,7 +4,7 @@
     <string name="display">Enter a value</string>
     <string name="fakeHint"> </string>
 
-    <string name="backspace">D</string>
+    <string name="backspace">Delete</string>
 
     <string name="one">1</string>
     <string name="two">2</string>
@@ -27,5 +27,7 @@
     <string name="plusMinus">+/-</string>
     <string name="point">.</string>
     <string name="equals">=</string>
+    <string name="history">history</string>
+
 
 </resources>
